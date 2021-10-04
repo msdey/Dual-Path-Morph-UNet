@@ -7,9 +7,9 @@ In this work we attempt to incorporate classical image processing with learning-
 
 ## Model
 
-<p align="middle">
-  <img src="./resources/DPM_UNet_fig.png" width="450" />
-  <img src="./resources/Dual_Path_Block_fig.png" width="410" /> 
+<p align="left">
+  <img src="./resources/Dual_Path_Block_fig.png" width="370" />
+  <img src="./resources/DPM_UNet_fig.png" width="406" /> 
 </p>
 
 Please cite our paper if you find the code useful 
