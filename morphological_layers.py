@@ -4,9 +4,18 @@ from keras import initializers, constraints
 from keras.utils import conv_utils
 from keras import backend as K
 
+
 class Erosion2D(Layer):
-    def __init__(self, num_filters, kernel_size, strides=(1, 1), padding='valid', kernel_initializer='glorot_uniform',
-                 kernel_constraint=None, **kwargs):
+    def __init__(
+        self,
+        num_filters,
+        kernel_size,
+        strides=(1, 1),
+        padding="valid",
+        kernel_initializer="glorot_uniform",
+        kernel_constraint=None,
+        **kwargs
+    ):
         super(Erosion2D, self).__init__(**kwargs)
         self.num_filters = num_filters
         self.kernel_size = kernel_size
@@ -19,16 +28,20 @@ class Erosion2D(Layer):
 
     def build(self, input_shape):
         if input_shape[self.channel_axis] is None:
-            raise ValueError('The channel dimension of the inputs '
-                             'should be defined. Found `None`.')
+            raise ValueError(
+                "The channel dimension of the inputs "
+                "should be defined. Found `None`."
+            )
 
         input_dim = input_shape[self.channel_axis]
         kernel_shape = self.kernel_size + (input_dim, self.num_filters)
 
-        self.kernel = self.add_weight(shape=kernel_shape,
-                                      initializer=self.kernel_initializer,
-                                      name='kernel',
-                                      constraint=self.kernel_constraint)
+        self.kernel = self.add_weight(
+            shape=kernel_shape,
+            initializer=self.kernel_initializer,
+            name="kernel",
+            constraint=self.kernel_constraint,
+        )
 
         # Be sure to call this at the end
         super(Erosion2D, self).build(input_shape)
@@ -39,9 +52,10 @@ class Erosion2D(Layer):
             # erosion2d returns image of same size as x
             # so taking min over channel_axis
             out = K.min(
-                self.__erosion2d(x, self.kernel[..., i],
-                                 self.strides, self.padding),
-                axis=self.channel_axis, keepdims=True)
+                self.__erosion2d(x, self.kernel[..., i], self.strides, self.padding),
+                axis=self.channel_axis,
+                keepdims=True,
+            )
 
             if i == 0:
                 outputs = out
@@ -60,29 +74,36 @@ class Erosion2D(Layer):
                 self.kernel_size[i],
                 padding=self.padding,
                 stride=self.strides[i],
-                dilation=1)  # self.erosion_rate[i])
+                dilation=1,
+            )  # self.erosion_rate[i])
             new_space.append(new_dim)
 
         return (input_shape[0],) + tuple(new_space) + (self.num_filters,)
 
-    def __erosion2d(self, x, st_element, strides, padding,
-                    rates=(1, 1, 1, 1)):
+    def __erosion2d(self, x, st_element, strides, padding, rates=(1, 1, 1, 1)):
         # tf.nn.erosion2d(input, filter, strides, rates, padding, name=None)
-        x = tf.nn.erosion2d(x, st_element, (1,) + strides + (1,),
-                            rates, padding.upper())
+        x = tf.nn.erosion2d(
+            x, st_element, (1,) + strides + (1,), rates, padding.upper()
+        )
         return x
 
 
 class Dilation2D(Layer):
-    '''
+    """
     Dilation 2D Layer
     for now assuming channel last
-    '''
+    """
 
-    def __init__(self, num_filters, kernel_size, strides=(1, 1),
-                 padding='valid', kernel_initializer='glorot_uniform',
-                 kernel_constraint=None,
-                 **kwargs):
+    def __init__(
+        self,
+        num_filters,
+        kernel_size,
+        strides=(1, 1),
+        padding="valid",
+        kernel_initializer="glorot_uniform",
+        kernel_constraint=None,
+        **kwargs
+    ):
         super(Dilation2D, self).__init__(**kwargs)
         self.num_filters = num_filters
         self.kernel_size = kernel_size
@@ -99,16 +120,20 @@ class Dilation2D(Layer):
 
     def build(self, input_shape):
         if input_shape[self.channel_axis] is None:
-            raise ValueError('The channel dimension of the inputs '
-                             'should be defined. Found `None`.')
+            raise ValueError(
+                "The channel dimension of the inputs "
+                "should be defined. Found `None`."
+            )
 
         input_dim = input_shape[self.channel_axis]
         kernel_shape = self.kernel_size + (input_dim, self.num_filters)
 
-        self.kernel = self.add_weight(shape=kernel_shape,
-                                      initializer=self.kernel_initializer,
-                                      name='kernel',
-                                      constraint=self.kernel_constraint)
+        self.kernel = self.add_weight(
+            shape=kernel_shape,
+            initializer=self.kernel_initializer,
+            name="kernel",
+            constraint=self.kernel_constraint,
+        )
 
         # Be sure to call this at the end
         super(Dilation2D, self).build(input_shape)
@@ -119,9 +144,10 @@ class Dilation2D(Layer):
             # dilation2d returns image of same size as x
             # so taking max over channel_axis
             out = K.max(
-                self.__dilation2d(x, self.kernel[..., i],
-                                  self.strides, self.padding),
-                axis=self.channel_axis, keepdims=True)
+                self.__dilation2d(x, self.kernel[..., i], self.strides, self.padding),
+                axis=self.channel_axis,
+                keepdims=True,
+            )
 
             if i == 0:
                 outputs = out
@@ -140,25 +166,30 @@ class Dilation2D(Layer):
                 self.kernel_size[i],
                 padding=self.padding,
                 stride=self.strides[i],
-                dilation=1)  # self.dilation_rate[i])
+                dilation=1,
+            )  # self.dilation_rate[i])
             new_space.append(new_dim)
 
         return (input_shape[0],) + tuple(new_space) + (self.num_filters,)
 
-    def __dilation2d(self, x, st_element, strides, padding,
-                     rates=(1, 1, 1, 1)):
+    def __dilation2d(self, x, st_element, strides, padding, rates=(1, 1, 1, 1)):
         # tf.nn.dilation2d(input, filter, strides, rates, padding, name=None)
-        x = tf.nn.dilation2d(x, st_element, (1,) + strides + (1,),
-                             rates, padding.upper())
+        x = tf.nn.dilation2d(
+            x, st_element, (1,) + strides + (1,), rates, padding.upper()
+        )
         return x
 
 
 class CombDense_new(Layer):
-    def __init__(self, units=1, strides=(1, 1),
-                 kernel_initializer='glorot_uniform',
-                 kernel_constraint=None,
-                 use_bias=True,
-                 **kwargs):
+    def __init__(
+        self,
+        units=1,
+        strides=(1, 1),
+        kernel_initializer="glorot_uniform",
+        kernel_constraint=None,
+        use_bias=True,
+        **kwargs
+    ):
         super(CombDense_new, self).__init__(**kwargs)
         self.num_node = units
         self.kernel_initializer = initializers.get(kernel_initializer)
@@ -190,4 +221,9 @@ class CombDense_new(Layer):
         return Z3
 
     def compute_output_shape(self, input_shape):
-        return (input_shape[0][0], input_shape[0][1], input_shape[0][2], input_shape[0][3])
+        return (
+            input_shape[0][0],
+            input_shape[0][1],
+            input_shape[0][2],
+            input_shape[0][3],
+        )
