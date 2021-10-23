@@ -1,4 +1,4 @@
-# Dual Path Morph-UNet 
+# Dual Path Morph-UNet for Road and Building Segmentation from Satellite Images
 
 This repository contains the official Tensorflow implementation of the Dual Path Morph-UNet as described in the paper [Dual Path Morph-UNet for Road and Building Segmentation from Satellite Images](https://ieeexplore.ieee.org/abstract/document/9526886). 
 
